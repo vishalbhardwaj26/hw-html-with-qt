@@ -10,6 +10,7 @@ Experimenting rendering HTML pages and JS communication in Qt
  ![](/images/configure.JPG?raw=true "")
  -->
 * Just check out that build dir should on on source level (parallel)
+
 <img src="/images/build.JPG?raw=true" width="400" >
 * Open **main.qml** under Resources and correct the url path according to your directory structure. Sorry that i have made it hard coded as of now.
 
