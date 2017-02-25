@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type="text/javascript" src="./qwebchannel.js"></script>
+        <script type="text/javascript">
+            //BEGIN SETUP
+
+            window.onload = function() {
+                if (location.search != "")
+                    var baseUrl = (/[?&]webChannelBaseUrl=([A-Za-z0-9\-:/\.]+)/.exec(location.search)[1]);
+                else
+                    var baseUrl = "ws://localhost:12345";
+
+                console.log("Connecting to WebSocket server at " + baseUrl + ".");
+                var socket = new WebSocket(baseUrl);
+                socket.onclose = function()
+                {
+                    console.error("web channel closed");
+                };
+
+                socket.onerror = function(error)
+                {
+                    console.error("web channel error: " + error);
+                };
+                socket.onopen = function()
+                {
+                    console.log("WebSocket connected, setting up QWebChannel.");
+                    window.channel = new QWebChannel(socket, function(channel) {
+                        // make dialog object accessible globally
+                        
+                    document.getElementById("send").onclick = function()
+                    {
+                        var fname = document.getElementById("firstname").value;
+                        var lname = document.getElementById("lastname").value;
+                        channel.objects.dbserver.addPerson(fname,lname);
+                    }
+
+
+                    channel.objects.dbserver.userListChanged.connect(function(mess1,mess2) {
+
+                    console.log("1");
+                    console.log(mess1 + mess2);
+                    var table = document.getElementById("myTable");
+                        var row = table.insertRow(0);
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        cell1.innerHTML = mess1;
+                        cell2.innerHTML = mess2;
+
+
+                        
+
+                    });
+                        
+
+                        
+
+                        
+                    });
+                }
+            }
+            //END SETUP
+        </script>
+        <style type="text/css">
+            html {
+                height: 100%;
+                width: 100%;
+            }
+            #input {
+                width: 400px;
+                margin: 0 10px 0 0;
+            }
+            #send {
+                width: 90px;
+                margin: 0;
+            }
+            #output {
+                width: 500px;
+                height: 300px;
+            }
+        </style>
+    </head>
+    <body>
+
+    First name:<br>
+    <input type="text" name="firstname" id="firstname" value="Mickey">
+    <br>
+    Last name:<br>
+    <input type="text" name="lastname" id="lastname" value="Mouse">
+    <br><br>
+    <input type="submit" id="send" value="Submit" onclick="javascript:click();">
+    Submit the detail to C++ server
+    <br><br><br><br>
+
+This Table is get populated when the above detail get submitted to C++ server, which further emit signal
+with submitted entry to notify html (js).
+<br>
+
+<table border="1" id="myTable">
+  <tr>
+    <td>Row1 cell1</td>
+    <td>Row1 cell2</td>
+  </tr>
+
+</table>
+    </body>
+</html>
